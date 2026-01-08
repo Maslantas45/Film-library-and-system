@@ -5,6 +5,7 @@ import AddMoviePage from './pages/AddMoviePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage'; // YENİ: Sayfayı çağırdık
 import { useEffect, useState } from 'react';
+import EditMoviePage from './pages/EditMoviePage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -55,6 +56,7 @@ function App() {
             <Route path="/add-movie" element={<AddMoviePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} /> {/* YENİ: Rota */}
+            <Route path="/edit-movie/:id" element={<EditMoviePage />} />
           </Routes>
         </div>
       </div>

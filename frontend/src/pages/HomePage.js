@@ -83,6 +83,13 @@ export default function HomePage() {
 
               {/* Sadece Admin ise Sil butonunu göster (Opsiyonel güvenlik) */}
               <button className="delete-btn" onClick={() => handleDelete(movie.id)}>Sil</button>
+              <button 
+    className="edit-btn" 
+    style={{backgroundColor: '#f39c12', marginRight: '10px'}} // Turuncu renk
+    onClick={() => navigate(`/edit-movie/${movie.id}`)}
+>
+    Düzenle
+</button>
             </div>
           </div>
         ))}

@@ -67,9 +67,43 @@ export class MoviesService {
     });
   }
 
-  update(id: number, updateMovieDto: UpdateMovieDto) {
-    return this.movieRepository.update(id, updateMovieDto);
+  // ... diğer kodlar (create, findAll vs) aynen kalsın ...
+
+  async update(id: number, updateMovieDto: UpdateMovieDto) {
+    // 1. Güncellenecek filmi bul
+    const movie = await this.movieRepository.findOne({
+      where: { id },
+      relations: ['director', 'genres'], // Mevcut ilişkileri de getir
+    });
+
+    if (!movie) {
+      throw new NotFoundException(`Film bulunamadı (ID: ${id})`);
+    }
+
+    // 2. Eğer yeni Yönetmen ID geldiyse, yönetmeni bul ve değiştir
+    if (updateMovieDto.directorId) {
+      const director = await this.directorRepository.findOneBy({ id: +updateMovieDto.directorId });
+      if (director) movie.director = director;
+    }
+
+    // 3. Eğer yeni Türler geldiyse, onları bul ve değiştir
+    if (updateMovieDto.genreIds) {
+      const genreIds = updateMovieDto.genreIds.map(gid => +gid);
+      const genres = await this.genreRepository.findBy({ id: In(genreIds) });
+      movie.genres = genres;
+    }
+
+    // 4. Diğer basit bilgileri güncelle (Başlık, Yıl, vs.)
+    if (updateMovieDto.title) movie.title = updateMovieDto.title;
+    if (updateMovieDto.description) movie.description = updateMovieDto.description;
+    if (updateMovieDto.releaseYear) movie.releaseYear = +updateMovieDto.releaseYear;
+    if (updateMovieDto.posterUrl) movie.posterUrl = updateMovieDto.posterUrl;
+
+    // 5. Kaydet
+    return await this.movieRepository.save(movie);
   }
+
+  // ... remove fonksiyonu vs kalsın ...
 
   remove(id: number) {
     return this.movieRepository.delete(id);
